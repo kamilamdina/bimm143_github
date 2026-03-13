@@ -7,7 +7,7 @@ My classwork from [BIMM143](https://bioboot.github.io/bimm143_W26/schedule/#8) a
 
 Class 04 [R fundamentals](class04/class04.pdf)
 
-Class05 [Data Viz with ggplot](class05/class05.Rproj)
+Class05 [Data Viz with ggplot](class05/class05.DS_Store)
 
 Class06 [More Stuff](class06/class06.pdf) 
 
