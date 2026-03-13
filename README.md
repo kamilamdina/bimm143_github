@@ -9,5 +9,5 @@ Class 04 [R fundamentals](class04/class04.pdf)
 
 Class05 [Data Viz with ggplot](class05/class05.Rproj)
 
-Class06 [More Stuff](class06/class06.pdf)
+Class06 [More Stuff](class06/class06.pdf) 
 
