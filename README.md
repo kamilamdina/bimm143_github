@@ -15,6 +15,6 @@ Class07 [Machine Learning](Class07/Class07.pdf)
 
 Class08 [Breast Cancer Mini Project](class08/class08.pdf) 
 
-Class09 [Candy Mini Project](class09/class09.pdf) 
+Class09 [Candy Mini Project](Class09/Class09.pdf) 
 
 Class10 [More Stuff](Class10/Class10.qmd) 
