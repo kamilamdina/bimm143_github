@@ -17,4 +17,4 @@ Class08 [Breast Cancer Mini Project](class08/class08.pdf)
 
 Class09 [Candy Mini Project](Class09/Class09.pdf) 
 
-Class10 [More Stuff](Class10/Class10.pdf) 
+Class10 [More Stuff](Class10/Untitled.pdf) 
