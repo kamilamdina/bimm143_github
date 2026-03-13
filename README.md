@@ -11,10 +11,10 @@ Class05 [Data Viz with ggplot](class06/class06.pdf)
 
 Class06 [More Stuff](class06/class06.qmd) 
 
-Class07 [Machine Learning](Class07/Class07.qmd) 
+Class07 [Machine Learning](Class07/Class07.pdf) 
 
-Class08 [More Stuff](class08/class08.qmd) 
+Class08 [More Stuff](class08/class08.pdf) 
 
-Class09 [More Stuff](class09/class09.qmd) 
+Class09 [More Stuff](class09/class09.pdf) 
 
 Class10 [More Stuff](Class10/Class10.qmd) 
