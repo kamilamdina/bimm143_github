@@ -1,0 +1,192 @@
+---
+title: "Class 14: RNA Seq Mini-Project"
+author: "Kamila Medina PID: A18475433"
+format: pdf
+toc: true
+---
+
+## Background 
+
+The data for today's mini project comes from a knock down study of an important HOX gene. 
+
+## Data Import 
+```{r}
+countData <- read.csv("GSE37704_featurecounts.csv", row.names = 1, 
+                      check.names = FALSE)
+colData <- read.csv("GSE37704_metadata.csv", row.names = 1)
+```
+
+Have a peek: 
+```{r}
+colData
+```
+```{r}
+head(countData)
+```
+
+
+### Clean Up (data tidying)
+
+```{r}
+countData <- countData[, -1]
+rownames(colData) == colnames(countData)
+head(countData)
+
+```
+```{r}
+#head(countData)
+to.keep <- rowSums(countData) > 0
+
+countData <- countData[to.keep,]
+
+```
+
+```{r}
+head(countData)
+```
+
+## DESeq Analysis
+
+
+```{r, message=FALSE}
+library(DESeq2)
+```
+
+
+### Setting Up the DESeq object 
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = countData,
+                              colData = colData,
+                              design = ~condition)
+```
+```{r}
+colData
+```
+
+
+## Running Deseq
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = countData,
+                              colData = colData,
+                              design = ~condition)
+
+dds = DESeq(dds)
+dds
+```
+
+
+### Getting Results
+```{r}
+res = results(dds)
+```
+```{r}
+head(res)
+```
+
+
+## Volcano Plot
+
+```{r}
+library(ggplot2)
+
+ggplot(res) +
+  aes(x = log2FoldChange, 
+      y = -log(padj)) +
+  geom_point(alpha = 0.5, color = "pink") +         
+  theme_minimal() +
+  xlab("Log2 Fold Change") +
+  ylab("-Log10 P-value") +
+  ggtitle("Volcano Plot") +
+  geom_hline(yintercept = -log10(0.05), color = "lightgreen") +
+  geom_vline(xintercept = c(-1, 1), color = "lightgreen")
+
+```
+
+## Add Annotation 
+
+```{r}
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+
+
+columns(org.Hs.eg.db)
+
+
+res$symbol <- mapIds(org.Hs.eg.db,
+                     keys = rownames(res),   
+                     keytype = "ENSEMBL",
+                     column = "SYMBOL",
+                     multiVals = "first")
+
+
+res$entrez <- mapIds(org.Hs.eg.db,
+                     keys = rownames(res),
+                     keytype = "ENSEMBL",
+                     column = "ENTREZID",
+                     multiVals = "first")
+
+
+res$name <- mapIds(org.Hs.eg.db,
+                   keys = rownames(res),
+                   keytype = "ENSEMBL",
+                   column = "GENENAME",
+                   multiVals = "first")
+
+
+head(res, 10)
+
+```
+
+## Pathway Analysis
+```{r}
+write.csv(res, file ="deseq_results.csv")
+```
+
+
+### KEGG
+
+```{r}
+library(pathview)
+library(gage)
+library(gageData)
+
+data(kegg.sets.hs)
+data(sigmet.idx.hs)
+
+
+kegg.sets.hs = kegg.sets.hs[sigmet.idx.hs]
+
+
+head(kegg.sets.hs, 3)
+
+```
+```{r}
+foldchanges = res$log2FoldChange
+names(foldchanges) = res$entrez
+head(foldchanges)
+
+```
+```{r}
+keggres = gage(foldchanges, gsets=kegg.sets.hs)
+head(keggres$less)
+```
+```{r}
+pathview(gene.data=foldchanges, pathway.id="hsa04110")
+pathview(foldchanges, pathway.id = "hsa04110")
+```
+
+![](hsa04110.pathview.png)
+
+
+
+
+```{r}
+pathview(gene.data=foldchanges, pathway.id="hsa04110", kegg.native=FALSE)
+```
+## Reactome & OPTIONAL GO
+
+```{r}
+sig_genes <- res[res$padj <= 0.05 & !is.na(res$padj), "symbol"]
+print(paste("Total number of significant genes:", length(sig_genes)))
+```

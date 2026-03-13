@@ -1,0 +1,52 @@
+---
+title: "Unix"
+author: "Kamila Medina PID:A18475433"
+format: html
+---
+
+**NOTES**
+
+- Print working directory is **pwd**, where am i?
+- **ls** stands for list, this lists out the files and directories where you are 
+- **cd** stands for change directory 
+- **mkdir** stands for make directory, added class 16
+- SHORTCUT = the little star sign, example is ls ../../Downloads/*.csv 
+
+- the dot dot is useful it's like absolute 
+- HOWEVER remember spaces matter in UNIX
+- if you put -1 it shows it as a list, spaces would result in many files 
+- rm stands for remove
+- touch creates a file
+- mv is move, rename
+- cp (copy) source and destination
+- ~/ shortcut for home area
+- ctrl a = moves the location 
+
+curl: download files from web or ftp
+wget: download files from the web
+tar - zxvf: untar (unpackage) tar archive files
+gunzip: unzip files 
+$PATH: the places (dirs) to look for programs
+
+
+## AWS EC2 Instance
+
+Connect to my instance with: 
+
+ssh -i ~/Downloads/bimm143_kami.pem ubuntu@ec2-34-209-250-215.us-west-2.compute.amazonaws.com
+
+Secure Copy files between machines, in this case from out instance to our laptop
+
+scp -i ~/Downloads/bimm143_kami.pem ubuntu@ec2-34-209-250-215.us-west-2.compute.amazonaws.com:/home/ubuntu/work/bimm143_github/class16/results.txt .
+
+
+## Class 17 instance 
+ssh -i ~/Downloads/bimm143_kami.pem ubuntu@ec2-18-237-86-76.us-west-2.compute.amazonaws.com
+
+export KEY=~/Downloads/bimm143_kami.pem
+export SERVER=ubuntu@ec2-18-237-86-76.us-west-2.compute.amazonaws.com
+
+ssh -i $KEY $SERVER
+
+scp -r -i $KEY $SERVER:~/*_quant .
+

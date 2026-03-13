@@ -1,0 +1,160 @@
+---
+title: "Class 08 : Breast Cancer Mini Project"
+author: "Kamila Medina PID: A18475433"
+format: pdf
+toc: true
+---
+
+## Background 
+
+In today's class we will be employing all R techniques for data analysis that we have learned thus far - including the machine learning methods of clustering and PCA - to analyze real breast cancer biopsy data. 
+
+## Data Import 
+
+The data is in CSV format:
+
+```{r}
+wisc.df <- read.csv ("WisconsinCancer.csv", row.names=1)
+```
+
+peek at the data 
+```{r}
+head(wisc.df, 3)
+```
+> Q1. How many observations are in this dataset?
+
+```{r}
+nrow(wisc.df)
+```
+
+> Q2. How many of the observations have a malignant diagnosis?
+
+
+```{r}
+sum(wisc.df$diagnosis == "M")
+```
+```{r}
+table(wisc.df$diagnosis)
+```
+
+> Q3. How many variables/features in the data are suffixed with _mean?
+
+```{r}
+length(grep("_mean",colnames(wisc.df)))
+```
+
+```{r}
+colnames(wisc.df)
+```
+
+We need to removed the `diagnosis` column before we do any further analysis of this dataset - we don't want to pass this to PCA etc. We will save it as a separate vector that we can use later to compare our findings to those of experts. 
+
+```{r}
+wisc.data <- wisc.df[,-1]
+diagnosis <- wisc.df$diagnosis
+```
+
+## Prinicpal Component Analysis (PCA)
+
+The main function in base R is called `prcomp()` we will use the optional argument `scale=TRUE` here as the data columns/features/ dimensions are very different scales in the original data set. 
+
+```{r}
+wisc.pr <- prcomp(wisc.data, scale=T)
+```
+
+```{r}
+attributes(wisc.pr)
+```
+```{r}
+wisc.pr$x
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(wisc.pr$x) + 
+  aes(PC1, PC2, col=diagnosis) +
+  geom_point()
+```
+```{r}
+summary(wisc.pr)
+```
+
+```{r}
+library(factoextra)
+fviz_eig(wisc.pr, addlabels = TRUE)
+```
+
+> Q9. For the first principal component, what is the component of the loading vector (i.e. wisc.pr$rotation[,1]) for the feature concave.points_mean? This tells us how much this original feature contributes to the first PC. Are there any features with larger contributions than this one?
+
+```{r}
+wisc.pr$rotation["concave.points_mean", "PC1"]
+```
+
+
+## Hierarchical Clustering 
+
+The goal of this section is to do hierarchical clustering of the **original data** to  see if there is any obvious grouping into malignant and benign clusters.
+
+
+```{r}
+wisc.dist <- dist(scale(wisc.data))
+wisc.hclust <- hclust(wisc.dist)
+plot(wisc.hclust)
+```
+```{r}
+wisc.hclust.clusters <- cutree(wisc.hclust, k=2)
+table(wisc.hclust.clusters)
+```
+## Combining Methods
+
+ The idea here is that I can take my new variables (i.e. the sores on PCs `wisc.pr$x) that are better descriptors of the data-set than the original features (i.e. the 30 columns in `wisc.data`) and use these as a basis for clustering.
+
+```{r}
+pc.dist <- dist(wisc.pr$x[ ,1:3])
+wisc.pr.hclust <- hclust(pc.dist, method ="ward.D2")
+plot(wisc.pr.hclust)
+```
+```{r}
+grps <- cutree(wisc.pr.hclust, k=2)
+table(grps)
+```
+
+```{r}
+table(diagnosis)
+```
+
+I can now run `table()` with both my clustering `grps` and the expert `diagnosis`
+```{r}
+table(grps, diagnosis)
+```
+
+Our cluster "1" has 179 "M" diagnosis 
+our cluster "2" has 333 "B" diagnosis
+
+179 TP
+24 FP
+333 TN
+33 FN 
+
+Sensitivity: TP/(TP+FN)
+```{r}
+179/(179+33)
+```
+
+Specificity : TN/(TN+FP)
+```{r}
+333/(333+24)
+```
+```{r}
+url <- "https://tinyurl.com/new-samples-CSV"
+new <- read.csv(url)
+npc <- predict(wisc.pr, newdata=new)
+npc
+```
+```{r}
+plot(wisc.pr$x[,1:2], col=grps)
+points(npc[,1], npc[,2], col="blue", pch=16, cex=3)
+text(npc[,1], npc[,2], c(1,2), col="white")
+```
+
